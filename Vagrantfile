@@ -6,13 +6,13 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
-auto = ENV['AUTO_START_SWARM'] || false
+auto = ENV['AUTO_START_SWARM'] || true
 # Increase numworkers if you want more than 3 nodes
-numworkers = 2
+numworkers = 4
 
 # VirtualBox settings
 # Increase vmmemory if you want more than 512mb memory in the vm's
-vmmemory = 512
+vmmemory = 2048
 # Increase numcpu if you want more cpu's per vm
 numcpu = 1
 
@@ -60,15 +60,27 @@ if not http_proxy.to_s.strip.empty?
 end
 
 Vagrant.configure("2") do |config|
+    config.vbguest.auto_update = false
     config.vm.provider "virtualbox" do |v|
      	v.memory = vmmemory
   	v.cpus = numcpu
+        v.linked_clone = true
     end
     
     config.vm.define "manager" do |i|
-      i.vm.box = "ubuntu/trusty64"
+      i.vm.box = "ubuntu/bionic64"
+      i.vm.box_url = "https://cloud-images.ubuntu.com/xenial/current/bionic-server-cloudimg-amd64-vagrant.box"
       i.vm.hostname = "manager"
       i.vm.network "private_network", ip: "#{manager_ip}"
+      i.vm.network "forwarded_port", guest:2375, host:2375
+      i.vm.network "forwarded_port", guest:2376, host:2376
+      i.vm.network "forwarded_port", guest:8080, host:8080
+      i.vm.network "forwarded_port", guest:8081, host:8081
+      i.vm.network "forwarded_port", guest:8082, host:8082
+      i.vm.network "forwarded_port", guest:8083, host:8083
+      i.vm.network "forwarded_port", guest:8084, host:8084
+      i.vm.network "forwarded_port", guest:8085, host:8085
+      i.vm.synced_folder "synced/manager", "/data"
       # Proxy
       if not http_proxy.to_s.strip.empty?
         i.proxy.http     = http_proxy
@@ -88,7 +100,8 @@ Vagrant.configure("2") do |config|
 
   instances.each do |instance| 
     config.vm.define instance[:name] do |i|
-      i.vm.box = "ubuntu/trusty64"
+      i.vm.box = "ubuntu/bionic64"
+      i.vm.box_url = "https://cloud-images.ubuntu.com/xenial/current/bionic-server-cloudimg-amd64-vagrant.box"
       i.vm.hostname = instance[:name]
       i.vm.network "private_network", ip: "#{instance[:ip]}"
       # Proxy
