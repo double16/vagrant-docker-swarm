@@ -42,6 +42,8 @@ numcpu = 1
 By default, vagrant will create pure machines with docker installed. You can run 
 `AUTO_START_SWARM=true vagrant up` to provision swarm automatically. You will get an already running Docker swarm cluster.
 
+In same way you can run with `AUTO_GLUSTERFS=true` (`AUTO_START_SWARM=true AUTO_GLUSTERFS=true vagrant up`) in order to get GlusterFS distributed in all workers and mounted in `/swarm/volumes` path. This path could be used to docker _statefull_ containers that can be _re-started_ in other node without lost previous state.
+
 # Play
 
 After starting swarm, you can use my testing Docker image to play with. It is called `darek/goweb` and is a super simple Web app, displaying the hostname, and a version. There are three tags: `1.0`, `2.0` and `latest`. They can be used to play with swarm rolling update feature. The container exposes port 8080. 

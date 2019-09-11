@@ -2,5 +2,6 @@ synced/
 hosts
 *.log
 .vagrant/
-
-
+private/
+id_rsa_provision*
+token

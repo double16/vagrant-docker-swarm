@@ -1,46 +1,39 @@
 #!/bin/bash
+
 export DEBIAN_FRONTEND=noninteractive
 
-cat > /etc/apt/apt.conf.d/01proxy <<EOF
-Acquire::HTTP::Proxy "http://192.168.1.254:3142/";
+if [ -n "$http_proxy" ]; then
+  cat > /etc/apt/apt.conf.d/01proxy <<EOF
+Acquire::HTTP::Proxy "$http_proxy";
 Acquire::HTTPS::Proxy false;
 EOF
+fi
 
-#sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 \ --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-#echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
-#sudo apt-get update
-## sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual -y
-#sudo apt-get install docker-engine --force-yes -y
-#sudo usermod -aG docker vagrant
-#sudo service docker start
-#docker version
+apt-get update -y -qq
 
-sudo apt-get update -y -qq
-
-sudo apt-get install -y \
+apt-get install -y \
   apt-transport-https \
   ca-certificates \
   curl \
   gnupg-agent \
   software-properties-common
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 
-sudo add-apt-repository \
+add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    edge"
 
-sudo apt-get update -y -qq
+# GlusterFS
+add-apt-repository ppa:gluster/glusterfs-4.1
+add-apt-repository ppa:gluster/glusterfs-coreutils
 
-#The following fails on docker-ce-cli, "package not found"
-#sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+apt-get update -y -qq
 
-#It looks like this is all that's needed...maybe
-sudo apt-get install -y docker-ce
+# apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
+apt-get install --force-yes -y docker-ce glusterfs-server glusterfs-coreutils
 
-sudo usermod -aG docker vagrant
+usermod -aG docker vagrant
 
-#sudo service docker start
-
-
+systemctl start docker
