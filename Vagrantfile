@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
       config.cache.scope = :box
     end
 
-    config.vbguest.auto_update = true
+    config.vbguest.auto_update = false
     config.vm.provider "virtualbox" do |v|
      	v.memory = vmmemory
       v.cpus = numcpu
@@ -89,6 +89,7 @@ Vagrant.configure("2") do |config|
     
     config.vm.define "manager" do |i|
       i.vm.box = "ubuntu/bionic64"
+      i.vm.box_check_update = false
       i.vm.hostname = "manager"
       i.vm.network "private_network", ip: "#{manager_ip}"
       i.vm.network "forwarded_port", guest:2375, host:2375
@@ -148,6 +149,7 @@ Vagrant.configure("2") do |config|
   instances.each_with_index do |instance, idx|
     config.vm.define instance[:name] do |i|
       i.vm.box = "ubuntu/bionic64"
+      i.vm.box_check_update = false
       i.vm.hostname = instance[:name]
       i.vm.network "private_network", ip: "#{instance[:ip]}"
       # Proxy

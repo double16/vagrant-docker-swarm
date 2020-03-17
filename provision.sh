@@ -33,6 +33,7 @@ apt-get update -y -qq
 
 # apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
 apt-get install --force-yes -y docker-ce glusterfs-server glusterfs-coreutils
+mkdir -p /etc/systemd/system/docker.service.d/http-proxy.conf
 
 usermod -aG docker vagrant
 
